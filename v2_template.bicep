@@ -5,13 +5,22 @@ param AppInsights_Name string
 param ContainerApps_Environment_Name string
 param ContainerApps_HttpApi_CurrentRevisionName string
 param ContainerApps_HttpApi_NewRevisionName string
+param Container_Registry_Name string
 
 var StorageAccount_ApiVersion = '2018-07-01'
 var StorageAccount_Queue_Name = 'demoqueue'
 var Workspace_Resource_Id = LogAnalytics_Workspace_Name_resource.id
 
-
-
+resource acr 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
+  name: Container_Registry_Name
+  location: Location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    adminUserEnabled: true
+  }
+}
 
 resource StorageAccount_Name_resource 'Microsoft.Storage/storageAccounts@2021-01-01' = {
   name: '${StorageAccount_prefix}${uniqueString(resourceGroup().id)}'
@@ -46,6 +55,7 @@ resource LogAnalytics_Workspace_Name_resource 'Microsoft.OperationalInsights/wor
     }
   }
 }
+
 resource AppInsights_Name_resource 'Microsoft.Insights/components@2020-02-02' = {
   name: AppInsights_Name
   kind: 'web'
